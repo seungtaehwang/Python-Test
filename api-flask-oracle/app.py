@@ -1,7 +1,12 @@
 from flask import Flask, jsonify
 import os
+import random
+from flask_cors import CORS
+import oracledb
+
 
 app = Flask(__name__)
+CORS(app) # 모든 경로(route)에 대해 CORS 활성화
 
 # Oracle DB 연결 정보 설정
 # 실제 환경에서는 환경 변수 등을 사용하여 보안을 강화하는 것이 좋습니다.
@@ -45,7 +50,7 @@ def get_items():
                 "description": row[1],
                 "done": bool(row[2])
             })
-
+        print(items)
         return jsonify(items)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -54,6 +59,24 @@ def get_items():
             cursor.close()
         if connection:
             connection.close()
+
+@app.route('/api/chartdata', methods=['GET'])
+def get_chartdata():
+
+    try:
+        names = [{"name": "a"}, {"name": "b"}, {"name": "c"}]
+        items = []
+        for name in names:
+            for i in range(10):   
+                items.append({
+                    "name": name["name"],
+                    "xvalue": random.randint(1,100) ,
+                    "yvalue": random.randint(50,100)
+                })
+        print(items)
+        return jsonify(items)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
     # Flask 애플리케이션 실행 (개발 모드)
